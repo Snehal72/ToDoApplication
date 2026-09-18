@@ -1,53 +1,69 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Todo } from "../types/todo";
+import { getTodos } from "../services/todoService";
 
 export const useTodos = () => {
-  const [todos, setTodos] = useState<Todo[]>([
-    {
-      id: 1,
-      title: "Create Application",
-      completed: false,
-    },
-    {
-      id: 2,
-      title: "Login Changes",
-      completed: true,
-    },
-  ]);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
-  const addTodo = (title: string) => {
-    const newTodo: Todo = {
-      id: Date.now(),
-      title,
-      completed: false,
+  useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        const data = await getTodos();
+        setTodos(data);
+      } catch {
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    setTodos((currentTodos) => [...currentTodos, newTodo]);
+    fetchTodos();
+  }, []);
+
+  const addTodo = (title: string) => {
+    setTodos((currentTodos) => [
+      ...currentTodos,
+      {
+        id: Date.now(),
+        title,
+        completed: false,
+      },
+    ]);
+  };
+
+  const editTodo = (id: number, title: string) => {
+    setTodos((currentTodos) =>
+      currentTodos.map((todo) =>
+        todo.id === id ? { ...todo, title } : todo
+      )
+    );
   };
 
   const deleteTodo = (id: number) => {
-    setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id));
+    setTodos((currentTodos) =>
+      currentTodos.filter((todo) => todo.id !== id)
+    );
   };
 
   const toggleTodo = (id: number) => {
     setTodos((currentTodos) =>
       currentTodos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        todo.id === id
+          ? { ...todo, completed: !todo.completed }
+          : todo
       )
-    );
-  };
-
-  const editTodo = (id: number, title: string) => {
-    setTodos((currentTodos) =>
-      currentTodos.map((todo) => (todo.id === id ? { ...todo, title } : todo))
     );
   };
 
   return {
     todos,
+    isLoading,
+    isError,
     addTodo,
+    editTodo,
     deleteTodo,
     toggleTodo,
-    editTodo,
   };
 };

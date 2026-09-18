@@ -6,16 +6,14 @@ export const getTodos = async (): Promise<Todo[]> => {
   const response = await fetch(`${API_URL}?limit=10`);
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch todos: ${response.status}`);
+    throw new Error("Failed to fetch todos");
   }
 
   const data = await response.json();
 
-  return data.todos.map(
-    (item: { id: number; todo: string; completed: boolean }) => ({
-      id: item.id,
-      title: item.todo,
-      completed: item.completed,
-    })
-  );
+  return data.todos.map((item: any) => ({
+    id: item.id,
+    title: item.todo,
+    completed: item.completed,
+  }));
 };

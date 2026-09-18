@@ -18,7 +18,15 @@ const validationSchema = Yup.object({
 });
 
 function App() {
-  const { todos, addTodo, deleteTodo, toggleTodo, editTodo } = useTodos();
+  const {
+    todos,
+    isLoading,
+    isError,
+    addTodo,
+    editTodo,
+    deleteTodo,
+    toggleTodo,
+  } = useTodos();
 
   const [title, setTitle] = useState("");
   const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
@@ -49,27 +57,35 @@ function App() {
   }, [todos, filter]);
 
   const handleAddTodo = async () => {
-  const errors = await formik.validateForm();
+    const errors = await formik.validateForm();
 
-  if (Object.keys(errors).length > 0) {
-    formik.setTouched({
-      title: true,
-    });
+    if (Object.keys(errors).length > 0) {
+      formik.setTouched({
+        title: true,
+      });
 
-    return;
+      return;
+    }
+
+    const todoTitle = formik.values.title.trim();
+
+    if (editingId !== null) {
+      editTodo(editingId, todoTitle);
+      setEditingId(null);
+    } else {
+      addTodo(todoTitle);
+    }
+
+    formik.resetForm();
+  };
+
+  if (isLoading) {
+    return <Text>Loading todos...</Text>;
   }
 
-  const todoTitle = formik.values.title.trim();
-
-  if (editingId !== null) {
-    editTodo(editingId, todoTitle);
-    setEditingId(null);
-  } else {
-    addTodo(todoTitle);
+  if (isError) {
+    return <Text c="red">Failed to load todos</Text>;
   }
-
-  formik.resetForm();
-};
 
   return (
     <Container size="md" py="xl">
@@ -93,9 +109,22 @@ function App() {
             />
           </div>
           <div style={{ paddingTop: 24 }}>
-            <Button onClick={handleAddTodo} size="lg">
-              {editingId !== null ? "Update Todo" : "Add Todo"}
-            </Button>
+            <Group gap="sm">
+              <Button onClick={handleAddTodo} size="sm">
+                {editingId !== null ? "Update Todo" : "Add Todo"}
+              </Button>
+              {editingId !== null && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setEditingId(null);
+                    formik.resetForm();
+                  }}
+                >
+                  Cancel
+                </Button>
+              )}
+            </Group>
           </div>
         </Group>
 

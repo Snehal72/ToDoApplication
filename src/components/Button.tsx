@@ -1,11 +1,12 @@
 import { Button as MantineButton } from "@mantine/core";
+import type { ButtonProps as MantineButtonProps } from "@mantine/core";
 
 interface ButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
   variant?: "filled" | "outline" | "light";
   color?: string;
-  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  size?: MantineButtonProps["size"];
 }
 
 function Button({
@@ -16,7 +17,13 @@ function Button({
   size = "sm",
 }: ButtonProps) {
   return (
-    <MantineButton onClick={onClick} variant={variant} color={color}>
+    <MantineButton
+      size={size}
+      px="xs"
+      onClick={onClick}
+      variant={variant}
+      color={color}
+    >
       {children}
     </MantineButton>
   );

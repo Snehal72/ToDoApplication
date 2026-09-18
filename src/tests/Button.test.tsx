@@ -1,23 +1,31 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
+import { MantineProvider } from "@mantine/core";
+import { renderWithMantine } from "./testUtils";
 
 import Button from "../components/Button";
+import userEvent from "@testing-library/user-event";
 
 describe("Button component", () => {
   test("renders Add Todo button", () => {
-    render(<Button>Add Todo</Button>);
+    render(
+      <MantineProvider>
+        <Button>Add Todo</Button>
+      </MantineProvider>,
+    );
 
     expect(
-      screen.getByRole("button", { name: "Add Todo" })
+      screen.getByRole("button", { name: "Add Todo" }),
     ).toBeInTheDocument();
   });
 
   test("calls onClick when Add Todo is clicked", async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({
+  advanceTimers: jest.advanceTimersByTime,
+});
     const handleClick = jest.fn();
 
-    render(<Button onClick={handleClick}>Add Todo</Button>);
+    renderWithMantine(<Button onClick={handleClick}>Add Todo</Button>);
 
     await user.click(screen.getByRole("button", { name: "Add Todo" }));
 
