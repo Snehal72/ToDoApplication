@@ -20,9 +20,8 @@ describe("Button component", () => {
   });
 
   test("calls onClick when Add Todo is clicked", async () => {
-    const user = userEvent.setup({
-  advanceTimers: jest.advanceTimersByTime,
-});
+   const user = userEvent.setup();
+   
     const handleClick = jest.fn();
 
     renderWithMantine(<Button onClick={handleClick}>Add Todo</Button>);

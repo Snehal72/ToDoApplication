@@ -47,9 +47,7 @@ test("calls onToggle when Complete is clicked", () => {
 });
 
   test("calls onDelete when Delete is clicked", async () => {
-    const user = userEvent.setup({
-  advanceTimers: jest.advanceTimersByTime,
-});
+  const user = userEvent.setup();
     const handleDelete = jest.fn();
 
     renderWithMantine(
