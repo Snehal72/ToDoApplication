@@ -48,22 +48,28 @@ function App() {
     return todos;
   }, [todos, filter]);
 
-  const handleAddTodo = () => {
-    const todoTitle = formik.values.title.trim();
+  const handleAddTodo = async () => {
+  const errors = await formik.validateForm();
 
-    if (!todoTitle) {
-      return;
-    }
+  if (Object.keys(errors).length > 0) {
+    formik.setTouched({
+      title: true,
+    });
 
-    if (editingId !== null) {
-      editTodo(editingId, todoTitle);
-      setEditingId(null);
-    } else {
-      addTodo(todoTitle);
-    }
+    return;
+  }
 
-    formik.resetForm();
-  };
+  const todoTitle = formik.values.title.trim();
+
+  if (editingId !== null) {
+    editTodo(editingId, todoTitle);
+    setEditingId(null);
+  } else {
+    addTodo(todoTitle);
+  }
+
+  formik.resetForm();
+};
 
   return (
     <Container size="md" py="xl">
